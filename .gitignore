@@ -1,0 +1,12 @@
+.DS_Store
+# Flutter/Dart
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+# iOS
+Pods/
+*.xcworkspace/xcuserdata/
+DerivedData/
+.symlinks/
