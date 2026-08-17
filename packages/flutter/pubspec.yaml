@@ -1,0 +1,27 @@
+name: searchadsradar
+description: >-
+  Official SearchAdsRadar SDK for Flutter — first-party Apple Search Ads
+  attribution, StoreKit 2 revenue, sessions and custom events (iOS 16+).
+  Safe no-op on Android and web.
+version: 1.0.0
+homepage: https://searchadsradar.com
+repository: https://github.com/appnest-tech/searchadsradar-mobile-sdks
+
+environment:
+  sdk: ^3.4.0
+  flutter: '>=3.22.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  plugin:
+    platforms:
+      ios:
+        pluginClass: SearchadsradarPlugin
