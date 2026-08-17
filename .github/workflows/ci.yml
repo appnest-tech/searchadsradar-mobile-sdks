@@ -25,8 +25,18 @@ jobs:
         working-directory: packages/flutter
       - run: flutter test
         working-directory: packages/flutter
-      - run: dart pub publish --dry-run
+      - name: Publish dry-run
         working-directory: packages/flutter
+        run: |
+          set +e
+          out=$(dart pub publish --dry-run 2>&1)
+          code=$?
+          echo "$out"
+          if [ "$code" -ne 0 ]; then
+            echo "$out" | tail -25 | while IFS= read -r l; do echo "::error::dryrun| $l"; done
+            git status --porcelain | while IFS= read -r l; do echo "::error::gitstatus| $l"; done
+          fi
+          exit $code
 
   ios-build:
     runs-on: macos-latest
