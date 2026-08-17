@@ -1,0 +1,53 @@
+name: ci
+on:
+  push: { branches: [main] }
+  pull_request:
+
+jobs:
+  vendor-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Re-sync and fail on drift
+        run: |
+          ./tool/sync-sarkit.sh
+          git diff --exit-code -- vendor packages/flutter/ios
+
+  dart:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with: { channel: stable }
+      - run: flutter pub get
+        working-directory: packages/flutter
+      - run: flutter analyze
+        working-directory: packages/flutter
+      - run: flutter test
+        working-directory: packages/flutter
+      - run: dart pub publish --dry-run
+        working-directory: packages/flutter
+
+  ios-build:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        mode: [cocoapods, swiftpm]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with: { channel: stable }
+      - name: Select dependency manager
+        run: |
+          if [ "${{ matrix.mode }}" = "swiftpm" ]; then
+            flutter config --enable-swift-package-manager
+          else
+            flutter config --no-enable-swift-package-manager
+          fi
+      - run: flutter build ios --no-codesign
+        working-directory: packages/flutter/example
+      - name: Privacy manifest present in built app
+        run: |
+          APP="packages/flutter/example/build/ios/iphoneos/Runner.app"
+          find "$APP" -name 'PrivacyInfo.xcprivacy' -path '*searchadsradar*' | grep . \
+            || { echo 'FAIL: searchadsradar privacy manifest missing from built app'; exit 1; }
