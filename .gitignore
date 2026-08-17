@@ -10,3 +10,6 @@ Pods/
 *.xcworkspace/xcuserdata/
 DerivedData/
 .symlinks/
+# Lockfiles (library package — resolved by consumers/CI, not pinned)
+pubspec.lock
+Podfile.lock
